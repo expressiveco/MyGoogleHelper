@@ -154,7 +154,7 @@ function getInfo(results, currentPage, countPerPage)
   var info;
   if (results.length > 0)
     info = results.length + ' results. Positions: ' + 
-      $.map(results, function(result) { return 10*(currentPage - 1) + result.pos; }).join(', ');
+      $.map(results, function(result) { return countPerPage*(currentPage - 1) + result.pos; }).join(', ');
   else
     info = 'Not found.';
   return info;
