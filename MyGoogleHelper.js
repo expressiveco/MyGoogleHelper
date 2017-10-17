@@ -122,7 +122,6 @@ function getResultElems()
     return parseInt(page, 10);
   }
   
-  function 
 function findResultElems($elems, keyword)
 {
   var pos = 0, results = [];
