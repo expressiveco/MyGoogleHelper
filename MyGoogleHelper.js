@@ -66,7 +66,7 @@ function loadFile(filename, filetype){
 
   function init()
   {
-    $(".sbibod").append('<input type="text" id="inputUrl" /><label for="inputUrl">Search URL: </label>');
+    $(".sbibod").after('<label for="inputUrl">Search URL: </label><input type="text" id="inputUrl" />');
   }
   getScript("https://code.jquery.com/jquery-3.2.1.min.js", init);
 
