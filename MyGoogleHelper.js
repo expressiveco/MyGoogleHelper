@@ -12,10 +12,10 @@ function getScript(src, callback) {
 }
 function addCSSRule(cssRule)
 {
-  $("<style>")
-    .prop("type", "text/css")
+  $('<style>')
+    .prop('type', 'text/css')
     .html(cssRule)
-    .appendTo("head");
+    .appendTo('head');
 }
 var docCookies = {
   getItem: function (sKey) {
@@ -56,49 +56,93 @@ var docCookies = {
 };
 (function(){
 
-  function init()
+  function initUI()
   {
-    $('.sbtc').prepend('<div id="MyGoogleHelper"><label for="inputUrl">URL: </label><input type="text" id="inputUrl" style="width:150px" /><span><span></div>');
+    $('.sbtc').prepend('<div id="MyGoogleHelper"><label for="inputUrl">URL: </label><input type="text" id="inputUrl" style="width:150px" /><span><span></div>');    
     addCSSRule("#MyGoogleHelper { margin:10px;float:right; } " +
                ".hilight-url { background-color: yellow; }");
-    
-    
+  }
+  function init()
+  {
+    initUI();
 
-    $('#inputUrl').on('keypress', function(e) {
+    var $input = $('#inputUrl'), $info = $('#MyGoogleHelper span');
+    var keyword = $.trim(getStoredKeyword());
+    $input.val(keyword);
+    if (keyword)
+      showResults($input.val(), $info);
+
+    $input.on('keypress', function(e) {
         if (e.which == 13) {
-          unHiLightUrls();
-          hiLightUrls($(this).val());
+          showResults($input.val(), $info);
           return false;
         }
     });
   }
-  getScript("https://code.jquery.com/jquery-3.2.1.min.js", init);
+  getScript('https://code.jquery.com/jquery-3.2.1.min.js', init);
 
+function showResults(keyword, $info)
+  {
+      updateStoredKeyword(keyword);
 
-function hiLightUrls(partialUrl)
+      var results = findResultElems(getResultElems(), keyword);
+      unHiLightUrls();
+      hiLightUrls(results);
+
+      $info.text(getInfo(results));
+  }
+function getResultContainers()
 {
-  var cnt = 0, ndx = 0, positions = [];
-  $('.srg .g cite').each(function() {
-    ndx++;
-    var $this = $(this);
-    if ($this.text().indexOf(partialUrl) != -1) {
-      cnt++;
-      positions.push(cnt);
-      $this.parents(".g").find(".r").addClass('hilight-url');
+  return $('.srg .g .r');
+}
+function getResultElems()
+  {
+    return $('.srg .g cite');
+  }
+function findResultElems($elems, keyword)
+{
+  var pos = 0, results = [];
+  $elems.each(function() {
+    var $elem = $(this);
+    pos++;
+    if ($elem.text().indexOf(keyword) != -1) {
+      results.push({elem: $elem, pos: pos});
     }
   });
-  if (cnt == 0)
-    $('#MyGoogleHelper span').text('');
-  else 
-    $('#MyGoogleHelper span').text( cnt + ' sonuç bulundu. ' + positions.join(',') + ' sıra.');
+  return results;
 }
 function unHiLightUrls()
 {
-  $('.srg .g .r').removeClass('hilight-url');
+  getResultContainers().removeClass('hilight-url');
 }
-function setCookie()
+function getResultContainer($elem)
+  {
+    return $elem.parents('.g').find('.r');
+  }
+function hiLightUrls(results, keyword)
 {
+  $.each(results, function() {
+      getResultContainer($(this.elem)).addClass('hilight-url');
+  });
 }
-
+function getInfo(results)
+{
+  var info;
+  if (results.length > 0)
+    info = results.length + ' results. Positions: ' + $.map(results, function() { return this.elem; }).join(', ');
+  else
+    info = 'Not found.';
+  return info;
+}
+  
+function getStoredKeyword()
+  {
+    return docCookies.getItem("MyGoogleHelper");
+  }
+  
+function updateStoredKeyword(keyword)
+  {
+    docCookies.setItem("MyGoogleHelper", keyword);
+  }
 
 }());
