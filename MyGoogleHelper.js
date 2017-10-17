@@ -1,3 +1,15 @@
+function getScript(src, callback) {
+  var s = document.createElement('script');
+  s.src = src;
+  s.async = true;
+  s.onreadystatechange = s.onload = function() {
+    if (!callback.done && (!s.readyState || /loaded|complete/.test(s.readyState))) {
+      callback.done = true;
+      callback();
+    }
+  };
+  document.querySelector('head').appendChild(s);
+}
 var docCookies = {
   getItem: function (sKey) {
     return decodeURIComponent(document.cookie.replace(new RegExp("(?:(?:^|.*;)\\s*" + encodeURIComponent(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=\\s*([^;]*).*$)|^.*$"), "$1")) || null;
@@ -52,10 +64,13 @@ function loadFile(filename, filetype){
 }
 (function(){
 
-loadFile("https://code.jquery.com/jquery-3.2.1.min.js", "js");
-  debugger;
+  function init()
+  {
+    $("body").append('<input type="text" id="inputUrl" /><label for="inputUrl>Search URL: </label>');
+  }
+  getScript("https://code.jquery.com/jquery-3.2.1.min.js", init);
 
-$("body").append('<input type="text" id="inputUrl" /><label for="inputUrl>Search URL: </label>');
+
 function findUrl(partialUrl)
 {
     $('.srg .g cite').each(function() {
