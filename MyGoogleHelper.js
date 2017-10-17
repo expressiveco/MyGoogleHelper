@@ -90,7 +90,7 @@ function hiLightUrls(partialUrl)
   if (cnt == 0)
     $('#MyGoogleHelper span').text('');
   else 
-    $('#MyGoogleHelper span').text( cnt + ' sonuç bulundu. ' + positions.join(',') + ' sıralar.');
+    $('#MyGoogleHelper span').text( cnt + ' sonuç bulundu. ' + positions.join(',') + ' sıra.');
 }
 function unHiLightUrls()
 {
