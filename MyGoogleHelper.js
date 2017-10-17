@@ -77,10 +77,11 @@ function loadFile(filename, filetype){
     addCSSRule(".hilight-url { background-color: yellow; }");
 
     $("#inputUrl").on("keypress", function(e) {
-        if (e.which != 13)
-          return;
-        unHiLightUrls();
-        hiLightUrl($(this).val());
+        if (e.which == 13) {         
+          unHiLightUrls();
+          hiLightUrl($(this).val());
+          return false;
+        }
     });
   }
   getScript("https://code.jquery.com/jquery-3.2.1.min.js", init);
