@@ -10,6 +10,13 @@ function getScript(src, callback) {
   };
   document.querySelector('head').appendChild(s);
 }
+function addCSSRule(cssRule)
+{
+  $("<style>")
+    .prop("type", "text/css")
+    .html(cssRule)
+    .appendTo("head");
+}
 var docCookies = {
   getItem: function (sKey) {
     return decodeURIComponent(document.cookie.replace(new RegExp("(?:(?:^|.*;)\\s*" + encodeURIComponent(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=\\s*([^;]*).*$)|^.*$"), "$1")) || null;
@@ -66,19 +73,30 @@ function loadFile(filename, filetype){
 
   function init()
   {
-    $(".sbibod").after('<label for="inputUrl">Search URL: </label><input type="text" id="inputUrl" />');
+    $(".sbtc").prepend('<div style="margin:10px;float:right"><label for="inputUrl">URL: </label><input type="text" id="inputUrl" style="width:150px" /></div>');
+    addCSSRule(".hilight-url { background-color: yellow; }");
+
+    $("#inputUrl").on("keypress", function(e) {
+        if (e.which != 13)
+          return;
+        unHiLightUrls();
+        hiLightUrl($(this).val());
+    });
   }
   getScript("https://code.jquery.com/jquery-3.2.1.min.js", init);
 
 
-function findUrl(partialUrl)
+function hiLightUrls(partialUrl)
 {
-    $('.srg .g cite').each(function() {
-        var $this = $(this);
-        if ($this.text().indexOf(partialUrl) != -1)
-            $this.parents(".g").find(".r").css("background-color", "yellow");
-    });
-    docCookies.getItem("search-keyword");
+  $('.srg .g cite').each(function() {
+    var $this = $(this);
+    if ($this.text().indexOf(partialUrl) != -1)
+      $this.parents(".g").find(".r").addClass('hilight-url');
+  });
+}
+function unHiLightUrls()
+{
+  $('.srg .g .r').removeClass('hilight-url');
 }
 function setCookie()
 {
