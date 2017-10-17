@@ -77,9 +77,9 @@ function loadFile(filename, filetype){
     addCSSRule(".hilight-url { background-color: yellow; }");
 
     $("#inputUrl").on("keypress", function(e) {
-        if (e.which == 13) {         
+        if (e.which == 13) {
           unHiLightUrls();
-          hiLightUrl($(this).val());
+          hiLightUrls($(this).val());
           return false;
         }
     });
