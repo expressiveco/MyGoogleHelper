@@ -66,7 +66,7 @@ function loadFile(filename, filetype){
 
   function init()
   {
-    $("body").append('<input type="text" id="inputUrl" /><label for="inputUrl>Search URL: </label>');
+    $("body").append('<input type="text" id="inputUrl" /><label for="inputUrl">Search URL: </label>');
   }
   getScript("https://code.jquery.com/jquery-3.2.1.min.js", init);
 
