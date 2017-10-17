@@ -10,6 +10,15 @@ function getScript(src, callback) {
   };
   document.querySelector('head').appendChild(s);
 }
+function parseQuery(qstr) {
+    var query = {};
+    var a = (qstr[0] === '?' ? qstr.substr(1) : qstr).split('&');
+    for (var i = 0; i < a.length; i++) {
+        var b = a[i].split('=');
+        query[decodeURIComponent(b[0])] = decodeURIComponent(b[1] || '');
+    }
+    return query;
+}
 function addCSSRule(cssRule)
 {
   $('<style>')
@@ -88,8 +97,9 @@ function showResults(keyword, $info)
       var results = findResultElems(getResultElems(), keyword);
       unHiLightUrls();
       hiLightUrls(results);
-      var currentPage = getCurrentPage();
-      $info.text(getInfo(results, currentPage));
+      var currentPage = getCurrentPage(), countPerPage = getResultCountPerPage();
+    
+      $info.text(getInfo(results, currentPage, countPerPage));
   }
 function getResultContainers()
 {
@@ -99,12 +109,20 @@ function getResultElems()
   {
     return $('.srg .g cite');
   }
-  
+  function getResultCountPerPage()
+  {
+    var $next = $('#pnnext'), $prev = $('#pnprev');
+    var param = parseQuery( $next.attr('href') || $prev.attr('href') || '') || { num: 10 };
+    return parseInt(param.num, 10);
+  }
   function getCurrentPage()
   {
     var page = $('#navcnt .cur').text();
+
     return parseInt(page, 10);
   }
+  
+  function 
 function findResultElems($elems, keyword)
 {
   var pos = 0, results = [];
@@ -131,7 +149,7 @@ function hiLightUrls(results, keyword)
       getResultContainer($(this.elem)).addClass('hilight-url');
   });
 }
-function getInfo(results, currentPage)
+function getInfo(results, currentPage, countPerPage)
 {
   var info;
   if (results.length > 0)
