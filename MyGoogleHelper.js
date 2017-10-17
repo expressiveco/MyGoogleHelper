@@ -67,7 +67,7 @@ function findUrl(partialUrl)
 function setCookie()
 {
 }
-function()
+function ss()
 {
 }
 
