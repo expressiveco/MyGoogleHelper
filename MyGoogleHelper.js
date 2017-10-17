@@ -52,7 +52,7 @@ function loadFile(filename, filetype){
 }
 (function(){
 
-loadjscssfile("https://code.jquery.com/jquery-3.2.1.min.js", "js");
+loadFile("https://code.jquery.com/jquery-3.2.1.min.js", "js");
 
 $("body").append('<input type="text" id="inputUrl" /><label for="inputUrl>Search URL: </label>');
 function findUrl(partialUrl)
