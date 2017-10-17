@@ -54,29 +54,17 @@ var docCookies = {
     return aKeys;
   }
 };
-function loadFile(filename, filetype){
-    if (filetype=="js"){ //if filename is a external JavaScript file
-        var fileref=document.createElement('script')
-        fileref.setAttribute("type","text/javascript")
-        fileref.setAttribute("src", filename)
-    }
-    else if (filetype=="css"){ //if filename is an external CSS file
-        var fileref=document.createElement("link")
-        fileref.setAttribute("rel", "stylesheet")
-        fileref.setAttribute("type", "text/css")
-        fileref.setAttribute("href", filename)
-    }
-    if (typeof fileref!="undefined")
-        document.getElementsByTagName("head")[0].appendChild(fileref)
-}
 (function(){
 
   function init()
   {
-    $(".sbtc").prepend('<div style="margin:10px;float:right"><label for="inputUrl">URL: </label><input type="text" id="inputUrl" style="width:150px" /></div>');
-    addCSSRule(".hilight-url { background-color: yellow; }");
+    $('.sbtc').prepend('<div id="MyGoogleHelper"><label for="inputUrl">URL: </label><input type="text" id="inputUrl" style="width:150px" /><span><span></div>');
+    addCSSRule("#MyGoogleHelper { margin:10px;float:right; } " +
+               ".hilight-url { background-color: yellow; }");
+    
+    
 
-    $("#inputUrl").on("keypress", function(e) {
+    $('#inputUrl').on('keypress', function(e) {
         if (e.which == 13) {
           unHiLightUrls();
           hiLightUrls($(this).val());
@@ -89,11 +77,20 @@ function loadFile(filename, filetype){
 
 function hiLightUrls(partialUrl)
 {
+  var cnt = 0, ndx = 0, positions = [];
   $('.srg .g cite').each(function() {
+    ndx++;
     var $this = $(this);
-    if ($this.text().indexOf(partialUrl) != -1)
+    if ($this.text().indexOf(partialUrl) != -1) {
+      cnt++;
+      positions.push(cnt);
       $this.parents(".g").find(".r").addClass('hilight-url');
+    }
   });
+  if (cnt == 0)
+    $('#MyGoogleHelper span').text('');
+  else 
+    $('#MyGoogleHelper span').text( cnt + ' sonuç bulundu. ' + positions.join(',') + ' sıralar.');
 }
 function unHiLightUrls()
 {
@@ -102,8 +99,6 @@ function unHiLightUrls()
 function setCookie()
 {
 }
-function ss()
-{
-}
+
 
 }());
