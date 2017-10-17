@@ -1,3 +1,5 @@
+(function(){
+
 function getScript(src, callback) {
   var s = document.createElement('script');
   s.src = src;
@@ -63,7 +65,6 @@ var docCookies = {
     return aKeys;
   }
 };
-(function(){
 
   function initUI()
   {
@@ -90,7 +91,7 @@ var docCookies = {
   }
   getScript('https://code.jquery.com/jquery-3.2.1.min.js', init);
 
-function showResults(keyword, $info)
+  function showResults(keyword, $info)
   {
       updateStoredKeyword(keyword);
 
@@ -101,11 +102,11 @@ function showResults(keyword, $info)
     
       $info.text(getInfo(results, currentPage, countPerPage));
   }
-function getResultContainers()
-{
-  return $('.srg .g .r');
-}
-function getResultElems()
+  function getResultContainers()
+  {
+    return $('.srg .g .r');
+  }
+  function getResultElems()
   {
     return $('.srg .g cite');
   }
@@ -121,50 +122,50 @@ function getResultElems()
 
     return parseInt(page, 10);
   }
-  
-function findResultElems($elems, keyword)
-{
-  var pos = 0, results = [];
-  $elems.each(function() {
-    var $elem = $(this);
-    pos++;
-    if ($elem.text().indexOf(keyword) != -1) {
-      results.push({elem: $elem, pos: pos});
-    }
-  });
-  return results;
-}
-function unHiLightUrls()
-{
-  getResultContainers().removeClass('hilight-url');
-}
-function getResultContainer($elem)
+
+  function findResultElems($elems, keyword)
+  {
+    var pos = 0, results = [];
+    $elems.each(function() {
+      var $elem = $(this);
+      pos++;
+      if ($elem.text().indexOf(keyword) != -1) {
+        results.push({elem: $elem, pos: pos});
+      }
+    });
+    return results;
+  }
+  function unHiLightUrls()
+  {
+    getResultContainers().removeClass('hilight-url');
+  }
+  function getResultContainer($elem)
   {
     return $elem.parents('.g').find('.r');
   }
-function hiLightUrls(results, keyword)
-{
-  $.each(results, function() {
-      getResultContainer($(this.elem)).addClass('hilight-url');
-  });
-}
-function getInfo(results, currentPage, countPerPage)
-{
-  var info;
-  if (results.length > 0)
-    info = results.length + ' results. Positions: ' + 
-      $.map(results, function(result) { return countPerPage*(currentPage - 1) + result.pos; }).join(', ');
-  else
-    info = 'Not found.';
-  return info;
-}
-  
-function getStoredKeyword()
+  function hiLightUrls(results, keyword)
+  {
+    $.each(results, function() {
+        getResultContainer($(this.elem)).addClass('hilight-url');
+    });
+  }
+  function getInfo(results, currentPage, countPerPage)
+  {
+    var info;
+    if (results.length > 0)
+      info = results.length + ' results. Positions: ' + 
+        $.map(results, function(result) { return countPerPage*(currentPage - 1) + result.pos; }).join(', ');
+    else
+      info = 'Not found.';
+    return info;
+  }
+
+  function getStoredKeyword()
   {
     return docCookies.getItem("MyGoogleHelper");
   }
-  
-function updateStoredKeyword(keyword)
+
+  function updateStoredKeyword(keyword)
   {
     docCookies.setItem("MyGoogleHelper", keyword);
   }
