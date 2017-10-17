@@ -53,6 +53,7 @@ function loadFile(filename, filetype){
 (function(){
 
 loadFile("https://code.jquery.com/jquery-3.2.1.min.js", "js");
+  debugger;
 
 $("body").append('<input type="text" id="inputUrl" /><label for="inputUrl>Search URL: </label>');
 function findUrl(partialUrl)
