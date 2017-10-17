@@ -129,7 +129,7 @@ function getInfo(results)
 {
   var info;
   if (results.length > 0)
-    info = results.length + ' results. Positions: ' + $.map(results, function() { return this.pos; }).join(', ');
+    info = results.length + ' results. Positions: ' + $.map(results, function(result) { return result.pos; }).join(', ');
   else
     info = 'Not found.';
   return info;
