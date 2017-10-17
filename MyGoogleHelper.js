@@ -88,8 +88,8 @@ function showResults(keyword, $info)
       var results = findResultElems(getResultElems(), keyword);
       unHiLightUrls();
       hiLightUrls(results);
-
-      $info.text(getInfo(results));
+      var currentPage = getCurrentPage();
+      $info.text(getInfo(results, currentPage));
   }
 function getResultContainers()
 {
@@ -98,6 +98,12 @@ function getResultContainers()
 function getResultElems()
   {
     return $('.srg .g cite');
+  }
+  
+  function getCurrentPage()
+  {
+    var page = $('#navcnt .cur').text();
+    return parseInt(page, 10);
   }
 function findResultElems($elems, keyword)
 {
@@ -125,11 +131,12 @@ function hiLightUrls(results, keyword)
       getResultContainer($(this.elem)).addClass('hilight-url');
   });
 }
-function getInfo(results)
+function getInfo(results, currentPage)
 {
   var info;
   if (results.length > 0)
-    info = results.length + ' results. Positions: ' + $.map(results, function(result) { return result.pos; }).join(', ');
+    info = results.length + ' results. Positions: ' + 
+      $.map(results, function(result) { return 10*(currentPage - 1) + result.pos; }).join(', ');
   else
     info = 'Not found.';
   return info;
