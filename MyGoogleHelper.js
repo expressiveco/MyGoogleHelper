@@ -105,7 +105,7 @@ var docCookies = {
   {
       updateStoredKeyword(keyword);
       unHiLightUrls();
-      var results = findResultElems(getResultElems(), keyword);      
+      var results = findResultElems(getAllResultElems(), keyword);      
       hiLightUrls(results);
       showResultInfo(results, $info);
   }
@@ -116,14 +116,18 @@ var docCookies = {
     if (keyword)
       showResults($input.val(), $info);    
   }
-  function getResultContainers()
+  function getAllResultContainers()
   {
-    return $('.srg .g .r');
+    return $('#rso .g .rc > .r');
   }
-  function getResultElems()
+  function getAllResultElems()
   {
-    return $('.srg .g cite');
+    return $('#rso .g .rc > .s cite');
   }
+  function getCurrentPageResultCount()
+  {
+    return getAllResultContainers().length;
+  }  
   function getResultCountPerPage()
   {
     var $next = $('#pnnext'), $prev = $('#pnprev');
@@ -151,25 +155,26 @@ var docCookies = {
   }
   function unHiLightUrls()
   {
-    unHilightElem(getResultContainers());
+    unHilightElem(getAllResultContainers());
   }
   function getResultContainer($elem)
   {
     return $elem.parents('.g').find('.r');
   }
+
   function hiLightUrls(results, keyword)
   {
     $.each(results, function() {
         hilightElem(getResultContainer($(this.elem)));
     });
   }
-  function getResultPositionInfo(results, countPerPage, currentPage)
+  function getResultPositionInfo(results, countPerPage, currentPage, currentPageResultCount)
   {
     var posInfo, pageStartPos = countPerPage*(currentPage-1), resultCnt = results.length;
     if (resultCnt == 0)
       return;
     
-    if (resultCnt == countPerPage)
+    if (resultCnt == currentPageResultCount)
       posInfo = "All positions";
     else
       posInfo = $.map(results, function(result) { return pageStartPos + result.pos; }).join(', ');    
@@ -180,8 +185,8 @@ var docCookies = {
   function getResultInfo(results)
   {
       var countPerPage = getResultCountPerPage(), 
-          currentPage = getCurrentPage(),
-          info, posInfo = getResultPositionInfo(results, countPerPage, currentPage);
+          currentPage = getCurrentPage(), currentPageResultCount = getCurrentPageResultCount(),
+          info, posInfo = getResultPositionInfo(results, countPerPage, currentPage, currentPageResultCount);
       if (posInfo)
         info = results.length + ' results. Positions: ' + posInfo;
       else
