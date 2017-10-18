@@ -100,7 +100,7 @@ var docCookies = {
       hiLightUrls(results);
       var currentPage = getCurrentPage(), countPerPage = getResultCountPerPage();
     
-      $info.text(getInfo(results, countPerPage, countPerPage));
+      $info.text(getInfo(results, countPerPage, currentPage));
   }
   function getResultContainers()
   {
