@@ -97,7 +97,7 @@ var docCookies = {
       var results = findResultElems(getResultElems(), keyword);
       unHiLightUrls();
       hiLightUrls(results);
-      showResultInfo(results);
+      showResultInfo(results, $info);
   }
   function getResultContainers()
   {
