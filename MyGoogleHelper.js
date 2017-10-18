@@ -128,11 +128,28 @@ var docCookies = {
   {
     return getAllResultContainers().length;
   }  
+  function getParam($elem)
+  {
+    var param = parseQuery($elem.attr('href') || 'num=');
+    // `start` is zero-based. 0-9, 10-19, ...
+    param.start = parseInt(param.start, 10) || 0;
+    param.num = parseInt(param.num, 10) || 0;
+  }
   function getResultCountPerPage()
   {
-    var $next = $('#pnnext'), $prev = $('#pnprev');
-    var param = parseQuery($next.attr('href') || $prev.attr('href') || 'num=10');
-    return parseInt(param.num || param.start, 10);
+    var cnt, currPage = getCurrentPage();
+    var paramPrev, paramNext = getParam($('#pnnext'));
+    if (paramNext.start) 
+    {
+      cnt = paramNext.start / currPage;
+    }
+    else
+    {
+      paramPrev = getParam($('#pnprev'));
+      if (paramPrev.start > 0)
+        cnt = paramPrev.start / (currPage - 2);
+    }
+    return cnt || paramPrev.num || paramNext.num;
   }
   function getCurrentPage()
   {
