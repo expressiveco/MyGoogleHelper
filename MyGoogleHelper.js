@@ -170,6 +170,7 @@ var docCookies = {
   }
   function getResultContainer($elem)
   {
+    //
     return $elem.parents('.g').find('.r');
   }
   function findResultElems($elems, keyword)
