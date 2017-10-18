@@ -71,7 +71,7 @@ var docCookies = {
   var hilightElem, unHilightElem;
   function initUI()
   {
-    $('.sbtc').prepend('<div id="MyGoogleHelper"><label for="MyGoogleHelperInput">URL: </label><input type="text" id="MyGoogleHelperInput" style="width:150px" /> <div class="info"></div></div>');
+    $('.sbtc').prepend('<div id="MyGoogleHelper"><label for="MyGoogleHelperInput">URL: </label><input type="text" id="MyGoogleHelperInput" style="width:150px" title="Press <Enter> to search." /> <div class="info"></div></div>');
     addCSSRule('#MyGoogleHelper { margin:5px; float:right; } ' +
                '#MyGoogleHelper .info { margin-top: 4px; }' +
                '.hilight-url { background-color: yellow; }');
@@ -100,12 +100,11 @@ var docCookies = {
         }
     });
   }
-
   function showResults(keyword, $info)
   {
       updateStoredKeyword(keyword);
       unHiLightUrls();
-      var results = findResultElems(getAllResultElems(), keyword);
+      var results = findResultContainers(getAllResultContainers(), keyword);
       hiLightUrls(results);
       showResultInfo(results, $info);
   }
@@ -116,13 +115,28 @@ var docCookies = {
     if (keyword)
       showResults($input.val(), $info);
   }
+/*
+#rso .g .rc				      - Result Container
+#rso .g .rc > .r 		    - Title
+#rso .g .rc > .s 	    	- Body
+#rso .g .rc > .s cite 	- Url
+#rso .g .rc > .s .st 	  - Description
+*/
+  function getResultTitle($resultCon)
+  {
+    return $resultCon.find('> .r');
+  }
   function getAllResultContainers()
   {
-    return $('#rso .g .rc > .r');
+    return $('#rso .g .rc');
   }
-  function getAllResultElems()
+  function getAllResultTitles()
   {
-    return $('#rso .g .rc > .s cite');
+    return getResultTitle(getAllResultContainers());
+  }
+  function getAllResultUrls()
+  {
+    return getAllResultContainers().find('> .s cite');
   }
   function getCurrentPageResultCount()
   {
@@ -132,14 +146,15 @@ var docCookies = {
   {
     var param = parseQuery($elem.attr('href') || 'num=');
     // `start` is zero-based. 0-9, 10-19, ...
-    param.start = parseInt(param.start, 10) || 0;
-    param.num = parseInt(param.num, 10) || 0;
-    return param;
+    return {
+      start: parseInt(param.start, 10) || 0,
+      num: parseInt(param.num, 10) || 0
+    };
   }
   function getResultCountPerPage()
   {
     var cnt, currPage = getCurrentPage();
-    var paramPrev, paramNext = getParam($('#pnnext'));
+    var paramNext = getParam($('#pnnext')), paramPrev;
     if (paramNext.start)
     {
       cnt = paramNext.start / currPage;
@@ -160,30 +175,22 @@ var docCookies = {
   }
   function unHiLightUrls()
   {
-    unHilightElem(getAllResultContainers());
+    unHilightElem(getAllResultTitles());
   }
-  function hiLightUrls(results, keyword)
+  function hiLightUrls(results)
   {
     $.each(results, function() {
-        hilightElem(this.elem);
+        hilightElem(getResultTitle(this.resultCon));
     });
   }
-  function getResultContainer($elem)
+  function findResultContainers($allResultCons, keyword)
   {
-    //
-    return $elem.parents('.g').find('.r');
-  }
-  function findResultElems($elems, keyword)
-  {
-    var pos = 0, results = [];
-    $elems.each(function() {
-      var $elem = $(this);
-      pos++;
-      if ($elem.text().indexOf(keyword) != -1) {
-        results.push({elem: getResultContainer($elem), pos: pos});
+    return $allResultCons.map(function(pos, resultCon) {
+      var $resultCon = $(resultCon);
+      if ($resultCon.text().indexOf(keyword) != -1) {
+        return({resultCon: $resultCon, pos: pos+1});
       }
     });
-    return results;
   }
   function getResultPositionInfo(results, countPerPage, currentPage, currentPageResultCount)
   {
@@ -209,17 +216,14 @@ var docCookies = {
         info = 'Not found.';
      return info;
   }
-
   function showResultInfo(results, $info)
   {
     $info.text(getResultInfo(results, $info));
   }
-
   function getStoredKeyword()
   {
     return docCookies.getItem('MyGoogleHelper');
   }
-
   function updateStoredKeyword(keyword)
   {
     docCookies.setItem('MyGoogleHelper', keyword);
