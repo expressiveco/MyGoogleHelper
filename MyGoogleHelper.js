@@ -66,21 +66,32 @@ var docCookies = {
   }
 };
 
+  getScript('https://code.jquery.com/jquery-3.2.1.min.js', init);
+
+  var hilightElem, unHilightElem;
   function initUI()
   {
-    $('.sbtc').prepend('<div id="MyGoogleHelper"><label for="inputUrl">URL: </label><input type="text" id="inputUrl" style="width:150px" /> <span><span></div>');    
-    addCSSRule('#MyGoogleHelper { margin:10px;float:right; } ' +
+    $('.sbtc').prepend('<div id="MyGoogleHelper"><label for="MyGoogleHelperInput">URL: </label><input type="text" id="MyGoogleHelperInput" style="width:150px" /> <div class="info"></div></div>');
+    addCSSRule('#MyGoogleHelper { margin:5px; float:right; } ' +
+               '#MyGoogleHelper .info { margin-top: 4px; }'
                '.hilight-url { background-color: yellow; }');
   }
   function init()
   {
     initUI();
 
-    var $input = $('#inputUrl'), $info = $('#MyGoogleHelper span');
-    var keyword = $.trim(getStoredKeyword());
-    $input.val(keyword);
-    if (keyword)
-      showResults($input.val(), $info);
+    var hilightClass = 'hilight-url';    
+    hilightElem = function($elem)
+    {
+      $elem.addClass(hilightClass);
+    }
+    unHilightElem = function($elem)
+    {
+      $elem.removeClass(hilightClass);
+    }    
+
+    var $input = $('#MyGoogleHelperInput'), $info = $('#MyGoogleHelper .info');
+    loadStoredKeyword($input, $info);
 
     $input.on('keypress', function(e) {
         if (e.which == 13) {
@@ -88,16 +99,22 @@ var docCookies = {
           return false;
         }
     });
-  }
-  getScript('https://code.jquery.com/jquery-3.2.1.min.js', init);
+  }  
 
   function showResults(keyword, $info)
   {
       updateStoredKeyword(keyword);
-      var results = findResultElems(getResultElems(), keyword);
       unHiLightUrls();
+      var results = findResultElems(getResultElems(), keyword);      
       hiLightUrls(results);
       showResultInfo(results, $info);
+  }
+  function loadStoredKeyword($input, $info)
+  {
+    var keyword = $.trim(getStoredKeyword());
+    $input.val(keyword);
+    if (keyword)
+      showResults($input.val(), $info);    
   }
   function getResultContainers()
   {
@@ -134,7 +151,7 @@ var docCookies = {
   }
   function unHiLightUrls()
   {
-    getResultContainers().removeClass('hilight-url');
+    unHilightElem(getResultContainers());
   }
   function getResultContainer($elem)
   {
@@ -143,7 +160,7 @@ var docCookies = {
   function hiLightUrls(results, keyword)
   {
     $.each(results, function() {
-        getResultContainer($(this.elem)).addClass('hilight-url');
+        hilightElem(getResultContainer($(this.elem)));
     });
   }
   function getResultPositionInfo(results, countPerPage, currentPage)
@@ -160,7 +177,7 @@ var docCookies = {
     return posInfo;
   }
   
-  function showResultInfo(results, $info)
+  function getResultInfo(results)
   {
       var countPerPage = getResultCountPerPage(), 
           currentPage = getCurrentPage(),
@@ -169,9 +186,13 @@ var docCookies = {
         info = results.length + ' results. Positions: ' + posInfo;
       else
         info = 'Not found.';
-        
-      $info.text(info);
+     return info;
   }
+  
+  function showResultInfo(results, $info)
+  {
+    $info.text(getResultInfo(results, $info));
+  }  
 
   function getStoredKeyword()
   {
@@ -182,5 +203,4 @@ var docCookies = {
   {
     docCookies.setItem('MyGoogleHelper', keyword);
   }
-
 }());
