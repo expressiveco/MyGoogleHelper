@@ -156,7 +156,7 @@ var docCookies = {
   {
     var page = $('#navcnt .cur').text();
 
-    return parseInt(page, 10);
+    return parseInt(page, 10) || 1;
   }
 
   function findResultElems($elems, keyword)
