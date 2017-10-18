@@ -68,7 +68,7 @@ var docCookies = {
 
   function initUI()
   {
-    $('.sbtc').prepend('<div id="MyGoogleHelper"><label for="inputUrl">URL: </label><input type="text" id="inputUrl" style="width:150px" /><span><span></div>');    
+    $('.sbtc').prepend('<div id="MyGoogleHelper"><label for="inputUrl">URL: </label><input type="text" id="inputUrl" style="width:150px" /> <span><span></div>');    
     addCSSRule('#MyGoogleHelper { margin:10px;float:right; } ' +
                '.hilight-url { background-color: yellow; }');
   }
@@ -94,13 +94,10 @@ var docCookies = {
   function showResults(keyword, $info)
   {
       updateStoredKeyword(keyword);
-
       var results = findResultElems(getResultElems(), keyword);
       unHiLightUrls();
       hiLightUrls(results);
-      var currentPage = getCurrentPage(), countPerPage = getResultCountPerPage();
-    
-      $info.text(getInfo(results, countPerPage, currentPage));
+      showResultInfo(results);
   }
   function getResultContainers()
   {
@@ -149,15 +146,31 @@ var docCookies = {
         getResultContainer($(this.elem)).addClass('hilight-url');
     });
   }
-  function getInfo(results, countPerPage, currentPage)
+  function getResultPositionInfo(results, countPerPage, currentPage)
   {
-    var info, pageStartPos = countPerPage*(currentPage-1);
-    if (results.length > 0)
-      info = results.length + ' results. Positions: ' + 
-        $.map(results, function(result) { return  pageStartPos + result.pos; }).join(', ');
-    else
-      info = 'Not found.';
-    return info;
+    var posInfo, pageStartPos = countPerPage*(currentPage-1), resultCnt = results.length;
+    if (resultCnt == 0)
+      return;
+    
+    if (resultCnt > 0)
+        posInfo = $.map(results, function(result) { return pageStartPos + result.pos; }).join(', ');
+    else if (resultCnt == countPerPage)
+      posInfo = "All positions";
+
+    return posInfo;
+  }
+  
+  function showResultInfo(results, $info)
+  {
+      var countPerPage = getResultCountPerPage(), 
+          currentPage = getCurrentPage(),
+          info, posInfo = getResultPositionInfo(results, countPerPage, currentPage);
+      if (posInfo)
+        info = results.length + ' results. Positions: ' + posInfo;
+      else
+        info = 'Not found.';
+        
+      $info.text(info);
   }
 
   function getStoredKeyword()
