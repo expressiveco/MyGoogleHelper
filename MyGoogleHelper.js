@@ -80,7 +80,7 @@ var docCookies = {
   {
     initUI();
 
-    var hilightClass = 'hilight-url';    
+    var hilightClass = 'hilight-url';
     hilightElem = function($elem)
     {
       $elem.addClass(hilightClass);
@@ -88,7 +88,7 @@ var docCookies = {
     unHilightElem = function($elem)
     {
       $elem.removeClass(hilightClass);
-    }    
+    }
 
     var $input = $('#MyGoogleHelperInput'), $info = $('#MyGoogleHelper .info');
     loadStoredKeyword($input, $info);
@@ -99,13 +99,13 @@ var docCookies = {
           return false;
         }
     });
-  }  
+  }
 
   function showResults(keyword, $info)
   {
       updateStoredKeyword(keyword);
       unHiLightUrls();
-      var results = findResultElems(getAllResultElems(), keyword);      
+      var results = findResultElems(getAllResultElems(), keyword);
       hiLightUrls(results);
       showResultInfo(results, $info);
   }
@@ -114,7 +114,7 @@ var docCookies = {
     var keyword = $.trim(getStoredKeyword());
     $input.val(keyword);
     if (keyword)
-      showResults($input.val(), $info);    
+      showResults($input.val(), $info);
   }
   function getAllResultContainers()
   {
@@ -127,7 +127,7 @@ var docCookies = {
   function getCurrentPageResultCount()
   {
     return getAllResultContainers().length;
-  }  
+  }
   function getParam($elem)
   {
     var param = parseQuery($elem.attr('href') || 'num=');
@@ -140,7 +140,7 @@ var docCookies = {
   {
     var cnt, currPage = getCurrentPage();
     var paramPrev, paramNext = getParam($('#pnnext'));
-    if (paramNext.start) 
+    if (paramNext.start)
     {
       cnt = paramNext.start / currPage;
     }
@@ -158,7 +158,20 @@ var docCookies = {
 
     return parseInt(page, 10) || 1;
   }
-
+  function unHiLightUrls()
+  {
+    unHilightElem(getAllResultContainers());
+  }
+  function hiLightUrls(results, keyword)
+  {
+    $.each(results, function() {
+        hilightElem(this.elem);
+    });
+  }
+  function getResultContainer($elem)
+  {
+    return $elem.parents('.g').find('.r');
+  }
   function findResultElems($elems, keyword)
   {
     var pos = 0, results = [];
@@ -166,43 +179,27 @@ var docCookies = {
       var $elem = $(this);
       pos++;
       if ($elem.text().indexOf(keyword) != -1) {
-        results.push({elem: $elem, pos: pos});
+        results.push({elem: getResultContainer($elem), pos: pos});
       }
     });
     return results;
-  }
-  function unHiLightUrls()
-  {
-    unHilightElem(getAllResultContainers());
-  }
-  function getResultContainer($elem)
-  {
-    return $elem.parents('.g').find('.r');
-  }
-
-  function hiLightUrls(results, keyword)
-  {
-    $.each(results, function() {
-        hilightElem(getResultContainer($(this.elem)));
-    });
   }
   function getResultPositionInfo(results, countPerPage, currentPage, currentPageResultCount)
   {
     var posInfo, pageStartPos = countPerPage*(currentPage-1), resultCnt = results.length;
     if (resultCnt == 0)
       return;
-    
+
     if (resultCnt == currentPageResultCount)
       posInfo = "All positions";
     else
-      posInfo = $.map(results, function(result) { return pageStartPos + result.pos; }).join(', ');    
+      posInfo = $.map(results, function(result) { return pageStartPos + result.pos; }).join(', ');
 
     return posInfo;
   }
-  
   function getResultInfo(results)
   {
-      var countPerPage = getResultCountPerPage(), 
+      var countPerPage = getResultCountPerPage(),
           currentPage = getCurrentPage(), currentPageResultCount = getCurrentPageResultCount(),
           info, posInfo = getResultPositionInfo(results, countPerPage, currentPage, currentPageResultCount);
       if (posInfo)
@@ -211,11 +208,11 @@ var docCookies = {
         info = 'Not found.';
      return info;
   }
-  
+
   function showResultInfo(results, $info)
   {
     $info.text(getResultInfo(results, $info));
-  }  
+  }
 
   function getStoredKeyword()
   {
