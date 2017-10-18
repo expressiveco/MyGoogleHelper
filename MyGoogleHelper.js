@@ -69,8 +69,8 @@ var docCookies = {
   function initUI()
   {
     $('.sbtc').prepend('<div id="MyGoogleHelper"><label for="inputUrl">URL: </label><input type="text" id="inputUrl" style="width:150px" /><span><span></div>');    
-    addCSSRule("#MyGoogleHelper { margin:10px;float:right; } " +
-               ".hilight-url { background-color: yellow; }");
+    addCSSRule('#MyGoogleHelper { margin:10px;float:right; } ' +
+               '.hilight-url { background-color: yellow; }');
   }
   function init()
   {
@@ -100,7 +100,7 @@ var docCookies = {
       hiLightUrls(results);
       var currentPage = getCurrentPage(), countPerPage = getResultCountPerPage();
     
-      $info.text(getInfo(results, currentPage, countPerPage));
+      $info.text(getInfo(results, countPerPage, countPerPage));
   }
   function getResultContainers()
   {
@@ -113,8 +113,8 @@ var docCookies = {
   function getResultCountPerPage()
   {
     var $next = $('#pnnext'), $prev = $('#pnprev');
-    var param = parseQuery( $next.attr('href') || $prev.attr('href') || '') || { num: 10 };
-    return parseInt(param.num, 10);
+    var param = parseQuery($next.attr('href') || $prev.attr('href') || 'num=10');
+    return parseInt(param.num || param.start, 10);
   }
   function getCurrentPage()
   {
@@ -149,12 +149,12 @@ var docCookies = {
         getResultContainer($(this.elem)).addClass('hilight-url');
     });
   }
-  function getInfo(results, currentPage, countPerPage)
+  function getInfo(results, countPerPage, currentPage)
   {
-    var info;
+    var info, pageStartPos = countPerPage*(currentPage-1);
     if (results.length > 0)
       info = results.length + ' results. Positions: ' + 
-        $.map(results, function(result) { return countPerPage*(currentPage - 1) + result.pos; }).join(', ');
+        $.map(results, function(result) { return  pageStartPos + result.pos; }).join(', ');
     else
       info = 'Not found.';
     return info;
@@ -162,12 +162,12 @@ var docCookies = {
 
   function getStoredKeyword()
   {
-    return docCookies.getItem("MyGoogleHelper");
+    return docCookies.getItem('MyGoogleHelper');
   }
 
   function updateStoredKeyword(keyword)
   {
-    docCookies.setItem("MyGoogleHelper", keyword);
+    docCookies.setItem('MyGoogleHelper', keyword);
   }
 
 }());
