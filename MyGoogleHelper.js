@@ -150,7 +150,7 @@ var docCookies = {
       if (paramPrev.start > 0)
         cnt = paramPrev.start / (currPage - 2);
     }
-    return cnt || paramPrev.num || paramNext.num;
+    return cnt || paramPrev.num || paramNext.num || 10;
   }
   function getCurrentPage()
   {
