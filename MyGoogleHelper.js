@@ -73,7 +73,7 @@ var docCookies = {
   {
     $('.sbtc').prepend('<div id="MyGoogleHelper"><label for="MyGoogleHelperInput">URL: </label><input type="text" id="MyGoogleHelperInput" style="width:150px" /> <div class="info"></div></div>');
     addCSSRule('#MyGoogleHelper { margin:5px; float:right; } ' +
-               '#MyGoogleHelper .info { margin-top: 4px; }'
+               '#MyGoogleHelper .info { margin-top: 4px; }' +
                '.hilight-url { background-color: yellow; }');
   }
   function init()
