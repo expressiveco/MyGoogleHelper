@@ -134,6 +134,7 @@ var docCookies = {
     // `start` is zero-based. 0-9, 10-19, ...
     param.start = parseInt(param.start, 10) || 0;
     param.num = parseInt(param.num, 10) || 0;
+    return param;
   }
   function getResultCountPerPage()
   {
