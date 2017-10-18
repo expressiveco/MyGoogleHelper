@@ -152,10 +152,10 @@ var docCookies = {
     if (resultCnt == 0)
       return;
     
-    if (resultCnt > 0)
-        posInfo = $.map(results, function(result) { return pageStartPos + result.pos; }).join(', ');
-    else if (resultCnt == countPerPage)
+    if (resultCnt == countPerPage)
       posInfo = "All positions";
+    else
+      posInfo = $.map(results, function(result) { return pageStartPos + result.pos; }).join(', ');    
 
     return posInfo;
   }
