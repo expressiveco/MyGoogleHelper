@@ -68,7 +68,7 @@ var docCookies = {
 
   getScript('https://code.jquery.com/jquery-3.2.1.min.js', init);
 
-  var hilightElem, unHilightElem;
+  var hilightClass = 'hilight-url', keywordCookieName = 'MyGoogleHelper';
   function initUI()
   {
     $('.sbtc').prepend('<div id="MyGoogleHelper"><label for="MyGoogleHelperInput">URL: </label><input type="text" id="MyGoogleHelperInput" style="width:150px" title="Press <Enter> to search." /> <div class="info"></div></div>');
@@ -79,16 +79,6 @@ var docCookies = {
   function init()
   {
     initUI();
-
-    var hilightClass = 'hilight-url';
-    hilightElem = function($elem)
-    {
-      $elem.addClass(hilightClass);
-    }
-    unHilightElem = function($elem)
-    {
-      $elem.removeClass(hilightClass);
-    }
 
     var $input = $('#MyGoogleHelperInput'), $info = $('#MyGoogleHelper .info');
     loadStoredKeyword($input, $info);
@@ -103,9 +93,9 @@ var docCookies = {
   function showResults(keyword, $info)
   {
       updateStoredKeyword(keyword);
-      unHiLightUrls();
-      var results = findResultContainers(getAllResultContainers(), keyword);
-      hiLightUrls(results);
+      unHilightUrls();
+      var results = findResults(getAllResultContainers(), keyword);
+      hilightUrls(results);
       showResultInfo(results, $info);
   }
   function loadStoredKeyword($input, $info)
@@ -173,22 +163,30 @@ var docCookies = {
 
     return parseInt(page, 10) || 1;
   }
-  function unHiLightUrls()
+  function hilightElem($elem)
+  {
+    $elem.addClass(hilightClass);
+  }
+  function unHilightElem($elem)
+  {
+    $elem.removeClass(hilightClass);
+  }
+  function unHilightUrls()
   {
     unHilightElem(getAllResultTitles());
   }
-  function hiLightUrls(results)
+  function hilightUrls(results)
   {
     $.each(results, function() {
         hilightElem(getResultTitle(this.resultCon));
     });
   }
-  function findResultContainers($allResultCons, keyword)
+  function findResults($allResultCons, keyword)
   {
     return $allResultCons.map(function(pos, resultCon) {
       var $resultCon = $(resultCon);
       if ($resultCon.text().indexOf(keyword) != -1) {
-        return({resultCon: $resultCon, pos: pos+1});
+        return {resultCon: $resultCon, pos: pos+1};
       }
     });
   }
@@ -222,10 +220,10 @@ var docCookies = {
   }
   function getStoredKeyword()
   {
-    return docCookies.getItem('MyGoogleHelper');
+    return docCookies.getItem(keywordCookieName);
   }
   function updateStoredKeyword(keyword)
   {
-    docCookies.setItem('MyGoogleHelper', keyword);
+    docCookies.setItem(keywordCookieName, keyword);
   }
 }());
