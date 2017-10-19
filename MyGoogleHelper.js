@@ -233,7 +233,7 @@ function memoize(func) {
       return;
 
     if (resultCnt == currentPageResultCount)
-      posInfo = "All positions";
+      posInfo = 'All positions';
     else
       posInfo = $.map(results, function(result) { return pageStartPos + result.pos; }).join(', ');
 
