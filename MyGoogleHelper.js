@@ -91,10 +91,11 @@ function memoize(func) {
   {
     $('#tsf .sbtc').prepend('<div id="MyGoogleHelper">'+
       '<label for="MyGoogleHelperInput">URL: </label>'+
-      '<input type="text" id="MyGoogleHelperInput" style="width:150px" title="Press <Enter> to search." />'+
+      '<input type="text" id="MyGoogleHelperInput" title="Press <Enter> to search." />'+
       '<div class="info"></div></div>');
     addCSSRule('#MyGoogleHelper { margin:5px; float:right; } ' +
-               '#MyGoogleHelper .info { margin-top: 4px; }' +
+               '#MyGoogleHelper .info { margin-top: 4px; } ' +
+               '#MyGoogleHelperInput { width: 150px; } ' +
                '.hilight-url { background-color: yellow; }');
   }
   function getMyGoogleHelper()
