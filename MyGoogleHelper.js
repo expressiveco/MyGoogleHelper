@@ -89,7 +89,10 @@ function memoize(func) {
   var hilightClass = 'hilight-url', keywordCookieName = 'MyGoogleHelper';
   function initUI()
   {
-    $('#tsf .sbtc').prepend('<div id="MyGoogleHelper"><label for="MyGoogleHelperInput">URL: </label><input type="text" id="MyGoogleHelperInput" style="width:150px" title="Press <Enter> to search." /> <div class="info"></div></div>');
+    $('#tsf .sbtc').prepend('<div id="MyGoogleHelper">'+
+      '<label for="MyGoogleHelperInput">URL: </label>'+
+      '<input type="text" id="MyGoogleHelperInput" style="width:150px" title="Press <Enter> to search." />'+
+      '<div class="info"></div></div>');
     addCSSRule('#MyGoogleHelper { margin:5px; float:right; } ' +
                '#MyGoogleHelper .info { margin-top: 4px; }' +
                '.hilight-url { background-color: yellow; }');
@@ -210,7 +213,7 @@ function memoize(func) {
   function hilightTitles(results)
   {
     $.each(results, function() {
-        hilightElem(getResultTitle(this.resultCon));
+        hilightElem(getResultTitle(this.$resultCon));
     });
   }
   function findResults($allResultCons, keyword)
@@ -218,7 +221,7 @@ function memoize(func) {
     return $allResultCons.map(function(pos, resultCon) {
       var $resultCon = $(resultCon);
       if ($resultCon.text().indexOf(keyword) != -1) {
-        return {resultCon: $resultCon, pos: pos+1};
+        return {$resultCon: $resultCon, pos: pos+1};
       }
     });
   }
