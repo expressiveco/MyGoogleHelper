@@ -93,9 +93,9 @@ var docCookies = {
   function showResults(keyword, $info)
   {
       updateStoredKeyword(keyword);
-      unHilightUrls();
+      unHilightTitles();
       var results = findResults(getAllResultContainers(), keyword);
-      hilightUrls(results);
+      hilightTitles(results);
       showResultInfo(results, $info);
   }
   function loadStoredKeyword($input, $info)
@@ -171,11 +171,11 @@ var docCookies = {
   {
     $elem.removeClass(hilightClass);
   }
-  function unHilightUrls()
+  function unHilightTitles()
   {
     unHilightElem(getAllResultTitles());
   }
-  function hilightUrls(results)
+  function hilightTitles(results)
   {
     $.each(results, function() {
         hilightElem(getResultTitle(this.resultCon));
