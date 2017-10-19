@@ -90,6 +90,13 @@ var docCookies = {
         }
     });
   }
+  function loadStoredKeyword($input, $info)
+  {
+    var keyword = $.trim(getStoredKeyword());
+    $input.val(keyword);
+    if (keyword)
+      showResults($input.val(), $info);
+  }
   function showResults(keyword, $info)
   {
       updateStoredKeyword(keyword);
@@ -97,13 +104,6 @@ var docCookies = {
       var results = findResults(getAllResultContainers(), keyword);
       hilightTitles(results);
       showResultInfo(results, $info);
-  }
-  function loadStoredKeyword($input, $info)
-  {
-    var keyword = $.trim(getStoredKeyword());
-    $input.val(keyword);
-    if (keyword)
-      showResults($input.val(), $info);
   }
 /*
 #rso .g .rc				      - Result Container
