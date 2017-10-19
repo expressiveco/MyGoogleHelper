@@ -66,6 +66,8 @@ var docCookies = {
   }
 };
 
+  if (document.querySelector('#MyGoogleHelper'))
+    return;
   getScript('https://code.jquery.com/jquery-3.2.1.min.js', init);
 
   var hilightClass = 'hilight-url', keywordCookieName = 'MyGoogleHelper';
