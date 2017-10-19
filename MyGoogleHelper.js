@@ -65,25 +65,55 @@ var docCookies = {
     return aKeys;
   }
 };
+function memoize(func) {
+  var memo = {};
+  var slice = Array.prototype.slice;
+  return function() {
+    var args = slice.call(arguments);
+    if (args in memo)
+      return memo[args];
+    else
+      return (memo[args] = func.apply(this, args));
+  }
+}
+  var getjQuery = memoize(function(selector){
+    return $(selector);
+  });
 
-  if (document.querySelector('#MyGoogleHelper'))
+  if (document.querySelector('#MyGoogleHelper')) {
+    showMyGoogleHelper();
     return;
+  }
   getScript('https://code.jquery.com/jquery-3.2.1.min.js', init);
 
   var hilightClass = 'hilight-url', keywordCookieName = 'MyGoogleHelper';
   function initUI()
   {
-    $('.sbtc').prepend('<div id="MyGoogleHelper"><label for="MyGoogleHelperInput">URL: </label><input type="text" id="MyGoogleHelperInput" style="width:150px" title="Press <Enter> to search." /> <div class="info"></div></div>');
+    $('#tsf .sbtc').prepend('<div id="MyGoogleHelper"><label for="MyGoogleHelperInput">URL: </label><input type="text" id="MyGoogleHelperInput" style="width:150px" title="Press <Enter> to search." /> <div class="info"></div></div>');
     addCSSRule('#MyGoogleHelper { margin:5px; float:right; } ' +
                '#MyGoogleHelper .info { margin-top: 4px; }' +
                '.hilight-url { background-color: yellow; }');
+  }
+  function getMyGoogleHelper()
+  {
+    return getjQuery('#MyGoogleHelper');
+  }
+  function getInput()
+  {
+    return getjQuery('#MyGoogleHelperInput');
+  }
+  function showMyGoogleHelper()
+  {
+      getMyGoogleHelper()[0].scrollIntoView();
+      getInput().focus();
   }
   function init()
   {
     initUI();
 
-    var $input = $('#MyGoogleHelperInput'), $info = $('#MyGoogleHelper .info');
+    var $input = getInput(), $info = getMyGoogleHelper().find('.info');
     loadStoredKeyword($input, $info);
+    showMyGoogleHelper();
 
     $input.on('keypress', function(e) {
         if (e.which == 13) {
@@ -120,7 +150,7 @@ var docCookies = {
   }
   function getAllResultContainers()
   {
-    return $('#rso .g .rc');
+    return getjQuery('#rso .g .rc');
   }
   function getAllResultTitles()
   {
@@ -146,22 +176,22 @@ var docCookies = {
   function getResultCountPerPage()
   {
     var cnt, currPage = getCurrentPage();
-    var paramNext = getParam($('#pnnext')), paramPrev;
+    var paramNext = getParam(getjQuery('#pnnext')), paramPrev;
     if (paramNext.start)
     {
-      cnt = paramNext.start / currPage;
+      cnt = paramNext.start/currPage;
     }
     else
     {
-      paramPrev = getParam($('#pnprev'));
+      paramPrev = getParam(getjQuery('#pnprev'));
       if (paramPrev.start > 0)
-        cnt = paramPrev.start / (currPage - 2);
+        cnt = paramPrev.start/(currPage-2);
     }
     return cnt || paramPrev.num || paramNext.num || 10;
   }
   function getCurrentPage()
   {
-    var page = $('#navcnt .cur').text();
+    var page = getjQuery('#navcnt .cur').text();
 
     return parseInt(page, 10) || 1;
   }
