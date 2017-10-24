@@ -80,11 +80,17 @@ function memoize(func) {
     return $(selector);
   });
 
-  if (document.querySelector('#MyGoogleHelper')) {
-    showMyGoogleHelper();
-    return;
+  function loadMyGoogleHelper() {
+    if (!isGoogleResultPage())
+      return;
+    if (isMyGoogleHelperLoaded()) {
+      showMyGoogleHelper();
+      return;
+    }
+    getScript('https://code.jquery.com/jquery-3.2.1.min.js', init);
   }
-  getScript('https://code.jquery.com/jquery-3.2.1.min.js', init);
+
+  loadMyGoogleHelper();
 
   var hilightClass = 'hilight-url', keywordCookieName = 'MyGoogleHelper';
   function initUI()
@@ -98,16 +104,20 @@ function memoize(func) {
                '#MyGoogleHelperInput { width: 150px; } ' +
                '.hilight-url { background-color: yellow; }');
   }
+  function isMyGoogleHelperLoaded()
+  {
+    return document.querySelector('#MyGoogleHelper') != null;
+  }
+  function isGoogleResultPage()
+  {
+    // #top_nav is the top navigation bar(All, Images,...) and rendered on result page even when there are no results.
+    return document.querySelector('#top_nav') != null;
+  }
   function getMyGoogleHelper()
   {
     return getjQuery('#MyGoogleHelper');
   }
 
-  function isGoogleResultPage()
-  {
-    // top_nav is the top navigation bar and rendered on result page even when there are no results.
-    return $('#top_nav').length > 0;
-  }
   function getInput()
   {
     return getjQuery('#MyGoogleHelperInput');
