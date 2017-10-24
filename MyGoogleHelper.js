@@ -102,6 +102,12 @@ function memoize(func) {
   {
     return getjQuery('#MyGoogleHelper');
   }
+
+  function isGoogleResultPage()
+  {
+    // top_nav is the top navigation bar and rendered on result page even when there are no results.
+    return $('#top_nav').length > 0;
+  }
   function getInput()
   {
     return getjQuery('#MyGoogleHelperInput');
