@@ -65,6 +65,21 @@ var docCookies = {
     return aKeys;
   }
 };
+function isScrolledIntoView(elem)
+{
+    var docViewTop = $(window).scrollTop();
+    var docViewBottom = docViewTop + $(window).height();
+
+    var elemTop = $(elem).offset().top;
+    var elemBottom = elemTop + $(elem).height();
+
+    return ((elemBottom <= docViewBottom) && (elemTop >= docViewTop));
+}
+function scrollIntoView($elem)
+{
+  if (!isScrolledIntoView($elem))
+    $elem[0].scrollIntoView();
+}
 function memoize(func) {
   var memo = {};
   var slice = Array.prototype.slice;
@@ -76,17 +91,22 @@ function memoize(func) {
       return (memo[args] = func.apply(this, args));
   }
 }
-  var getjQuery = memoize(function(selector){
+  var $getElem = memoize(function(selector){
     return $(selector);
+  });
+  var getElem = memoize(function(selector){
+    return document.querySelector(selector);
   });
 
   function loadMyGoogleHelper() {
     if (!isGoogleResultPage())
       return;
+
     if (isMyGoogleHelperLoaded()) {
       showMyGoogleHelper();
       return;
     }
+
     getScript('https://code.jquery.com/jquery-3.2.1.min.js', init);
   }
 
@@ -96,42 +116,47 @@ function memoize(func) {
   function initUI()
   {
     $('#tsf .sbtc').prepend('<div id="MyGoogleHelper">'+
-      '<label for="MyGoogleHelperInput">URL: </label>'+
-      '<input type="text" id="MyGoogleHelperInput" title="Press <Enter> to search." />'+
+      '<label for="MyGoogleHelper-Input">URL: </label>'+
+      '<input type="text" id="MyGoogleHelper-Input" title="Press <Enter> to search." />'+
       '<div class="info"></div></div>');
     addCSSRule('#MyGoogleHelper { margin:5px; float:right; } ' +
                '#MyGoogleHelper .info { margin-top: 4px; } ' +
-               '#MyGoogleHelperInput { width: 150px; } ' +
+               '#MyGoogleHelper-Input { width: 150px; } ' +
                '.hilight-url { background-color: yellow; }');
+  }
+
+  function getMyGoogleHelperElem()
+  {
+    // Do not memoize it because it is checked before adding the container element.
+    return document.querySelector('#MyGoogleHelper');
   }
   function isMyGoogleHelperLoaded()
   {
-    return document.querySelector('#MyGoogleHelper') != null;
+    return getMyGoogleHelperElem() != null;
   }
   function isGoogleResultPage()
   {
     // #top_nav is the top navigation bar(All, Images,...) and rendered on result page even when there are no results.
-    return document.querySelector('#top_nav') != null;
+    return getElem('#top_nav') != null;
   }
-  function getMyGoogleHelper()
+  function $getMyGoogleHelper()
   {
-    return getjQuery('#MyGoogleHelper');
+    return $getElem(getMyGoogleHelperElem());
   }
-
-  function getInput()
+  function $getInput()
   {
-    return getjQuery('#MyGoogleHelperInput');
+    return $getElem('#MyGoogleHelper-Input');
   }
   function showMyGoogleHelper()
   {
-      getMyGoogleHelper()[0].scrollIntoView();
-      getInput().focus();
+    scrollIntoView($getMyGoogleHelper());
+    $getInput().focus();
   }
   function init()
   {
     initUI();
 
-    var $input = getInput(), $info = getMyGoogleHelper().find('.info');
+    var $input = $getInput(), $info = $getMyGoogleHelper().find('.info');
     loadStoredKeyword($input, $info);
     showMyGoogleHelper();
 
@@ -153,7 +178,7 @@ function memoize(func) {
   {
       updateStoredKeyword(keyword);
       unHilightTitles();
-      var results = findResults(getAllResultContainers(), keyword);
+      var results = findResults($getAllResultContainers(), keyword);
       hilightTitles(results);
       showResultInfo(results, $info);
   }
@@ -164,25 +189,25 @@ function memoize(func) {
 #rso .g .rc > .s cite 	- Url
 #rso .g .rc > .s .st 	  - Description
 */
-  function getResultTitle($resultCon)
+  function $getAllResultContainers()
+  {
+    return $getElem('#rso .g .rc');
+  }
+  function $getResultTitle($resultCon)
   {
     return $resultCon.find('> .r');
   }
-  function getAllResultContainers()
+  function $getAllResultTitles()
   {
-    return getjQuery('#rso .g .rc');
+    return $getResultTitle($getAllResultContainers());
   }
-  function getAllResultTitles()
+  function getResultUrl($resultCon)
   {
-    return getResultTitle(getAllResultContainers());
-  }
-  function getAllResultUrls()
-  {
-    return getAllResultContainers().find('> .s cite');
+    return $resultCon.find('> .s cite').text();
   }
   function getCurrentPageResultCount()
   {
-    return getAllResultContainers().length;
+    return $getAllResultContainers().length;
   }
   function getParam($elem)
   {
@@ -196,14 +221,14 @@ function memoize(func) {
   function getResultCountPerPage()
   {
     var cnt, currPage = getCurrentPage();
-    var paramNext = getParam(getjQuery('#pnnext')), paramPrev;
+    var paramNext = getParam($getElem('#pnnext')), paramPrev;
     if (paramNext.start)
     {
       cnt = paramNext.start/currPage;
     }
     else
     {
-      paramPrev = getParam(getjQuery('#pnprev'));
+      paramPrev = getParam($getElem('#pnprev'));
       if (paramPrev.start > 0)
         cnt = paramPrev.start/(currPage-2);
     }
@@ -211,7 +236,7 @@ function memoize(func) {
   }
   function getCurrentPage()
   {
-    var page = getjQuery('#navcnt .cur').text();
+    var page = $getElem('#navcnt .cur').text();
 
     return parseInt(page, 10) || 1;
   }
@@ -225,19 +250,23 @@ function memoize(func) {
   }
   function unHilightTitles()
   {
-    unHilightElem(getAllResultTitles());
+    unHilightElem($getAllResultTitles());
   }
   function hilightTitles(results)
   {
     $.each(results, function() {
-        hilightElem(getResultTitle(this.$resultCon));
+        hilightElem($getResultTitle(this.$resultCon));
     });
+  }
+  function isKeywordInUrl($resultCon, keyword)
+  {
+    return getResultUrl($resultCon).indexOf(keyword) != -1;
   }
   function findResults($allResultCons, keyword)
   {
     return $allResultCons.map(function(pos, resultCon) {
       var $resultCon = $(resultCon);
-      if ($resultCon.text().indexOf(keyword) != -1) {
+      if (isKeywordInUrl($resultCon, keyword)) {
         return {$resultCon: $resultCon, pos: pos+1};
       }
     });
